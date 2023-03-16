@@ -16,7 +16,7 @@ Get Discord notifications for when your friends are online!
   - Users to monitor can be added with environment variables titled `user1`, `user2`, `user3`, etc. The value should be the user's Discord ID (see [here](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) for more).
   - Use `legacy='true'` to get plaintext messages instead of the new Discord embed.
 
-  ![image](https://user-images.githubusercontent.com/62234360/225538160-eaf1ccf1-dd59-4c31-a429-f5412c9b786b.png)
+  ![image](https://user-images.githubusercontent.com/62234360/225571170-a36c989a-2aa0-44b6-80de-350146ae2488.png)
 
 ## Running
 - Install dependencies with `npm install`.
