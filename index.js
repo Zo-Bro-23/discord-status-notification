@@ -62,13 +62,13 @@ client.login(process.env.token).then(async () => {
                 if (icons[`${newClient}-${newStatus}`]) {
                     files.push({ attachment: icons[`${newClient}-${newStatus}`], name: 'status.png' })
                 }
-                notificationUser.send({ content: `**Status update for @${User.username}#${User.discriminator}**\n${newClient ?? newClient?.charAt(0).toUpperCase() + newClient.slice(1)}, ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, files })
+                notificationUser.send({ content: `**Status update for @${User.username}#${User.discriminator}**\n${newClient ?? (newClient?.charAt(0).toUpperCase() + newClient?.slice(1))}, ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, files })
             } else {
                 notificationUser.send({ embeds: [embed] })
             }
             console.log('Presence updated', User.username, oldPresence?.clientStatus, newPresence?.clientStatus)
         } catch (error) {
-            notificationUser.send(`Error: ${error.message}`)
+            notificationUser.send(`Error: ${error}`)
         }
     })
     const welcomeEmbed = new Discord.EmbedBuilder()
