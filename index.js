@@ -68,7 +68,7 @@ client.login(process.env.token).then(async () => {
             }
             console.log('Presence updated', User.username, oldPresence?.clientStatus, newPresence?.clientStatus)
         } catch (error) {
-            notificationUser.send(`Error: ${error}`)
+            notificationUser.send(`Error: ${error}\n${error.stack}`)
         }
     })
     const welcomeEmbed = new Discord.EmbedBuilder()
