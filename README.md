@@ -2,7 +2,8 @@
 
 Get Discord notifications for when your friends are online!
 
-![image](https://user-images.githubusercontent.com/62234360/225537919-9424615b-2995-4f91-82fa-763b56f616e4.png)
+![image](https://user-images.githubusercontent.com/62234360/225551303-6a671407-847b-4b01-b2d6-a7da703fc7b5.png)
+![image](https://user-images.githubusercontent.com/62234360/225551415-7f8fd077-d687-4c74-bfc5-e93d11d5669b.png)
 
 ## Setup
 - [Create a Discord bot](https://discordjs.guide/preparations/setting-up-a-bot-application.html#what-is-a-token-anyway) and [add it](https://discordjs.guide/preparations/adding-your-bot-to-servers.html#creating-and-using-your-invite-link) to a server with all your friends.
