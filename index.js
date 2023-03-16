@@ -35,37 +35,41 @@ const footerImage = 'https://assets-global.website-files.com/6257adef93867e50d84
 client.login(process.env.token).then(async () => {
     const notificationUser = await client.users.fetch(process.env.notificationUser)
     client.addListener('presenceUpdate', async (oldPresence, newPresence) => {
-        const User = newPresence.user
-        const oldClient = oldPresence?.clientStatus ?? Object.keys(oldPresence?.clientStatus)[0]
-        const newClient = newPresence?.clientStatus ?? Object.keys(newPresence?.clientStatus)[0]
-        const oldStatus = oldPresence?.status
-        const newStatus = newPresence?.status
-        if (`${oldClient}, ${oldStatus}` == `${newClient}, ${newStatus}`) return
-        if (!userIds.includes(newPresence.user.id)) return
-        const embed = new Discord.EmbedBuilder()
-            .setColor(randomColor())
-            .setTitle('Status Update')
-            .setURL(githubRepo)
-            .setAuthor({ name: author, iconURL: notificationIcon, url: githubUser })
-            .setDescription(`Status update for @${User.username}#${User.discriminator}`)
-            .setThumbnail(icons[`${newClient}-${newStatus}`] ? icons[`${newClient}-${newStatus}`] : thumbnail)
-            .addFields(
-                { name: 'Old Status', value: `${oldClient?.charAt(0).toUpperCase() + oldClient?.slice(1)}: ${oldStatus.charAt(0).toUpperCase() + oldStatus.slice(1)}`, inline: true },
-                { name: 'New Status', value: `${newClient?.charAt(0).toUpperCase() + newClient?.slice(1)}: ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, inline: true }
-            )
-            .setImage(User.avatarURL({ size: 128 }))
-            .setTimestamp()
-            .setFooter({ text: footer, iconURL: footerImage })
-        if (process.env.legacy == 'true') {
-            const files = []
-            if (icons[`${newClient}-${newStatus}`]) {
-                files.push({ attachment: icons[`${newClient}-${newStatus}`], name: 'status.png' })
+        try {
+            const User = newPresence.user
+            const oldClient = oldPresence?.clientStatus ?? Object.keys(oldPresence?.clientStatus)[0]
+            const newClient = newPresence?.clientStatus ?? Object.keys(newPresence?.clientStatus)[0]
+            const oldStatus = oldPresence?.status
+            const newStatus = newPresence?.status
+            if (`${oldClient}, ${oldStatus}` == `${newClient}, ${newStatus}`) return
+            if (!userIds.includes(newPresence.user.id)) return
+            const embed = new Discord.EmbedBuilder()
+                .setColor(randomColor())
+                .setTitle('Status Update')
+                .setURL(githubRepo)
+                .setAuthor({ name: author, iconURL: notificationIcon, url: githubUser })
+                .setDescription(`Status update for @${User.username}#${User.discriminator}`)
+                .setThumbnail(icons[`${newClient}-${newStatus}`] ? icons[`${newClient}-${newStatus}`] : thumbnail)
+                .addFields(
+                    { name: 'Old Status', value: `${oldClient ?? oldClient?.charAt(0).toUpperCase() + oldClient?.slice(1)}: ${oldStatus.charAt(0).toUpperCase() + oldStatus.slice(1)}`, inline: true },
+                    { name: 'New Status', value: `${newClient ?? newClient?.charAt(0).toUpperCase() + newClient?.slice(1)}: ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, inline: true }
+                )
+                .setImage(User.avatarURL({ size: 128 }))
+                .setTimestamp()
+                .setFooter({ text: footer, iconURL: footerImage })
+            if (process.env.legacy == 'true') {
+                const files = []
+                if (icons[`${newClient}-${newStatus}`]) {
+                    files.push({ attachment: icons[`${newClient}-${newStatus}`], name: 'status.png' })
+                }
+                notificationUser.send({ content: `**Status update for @${User.username}#${User.discriminator}**\n${newClient ?? newClient?.charAt(0).toUpperCase() + newClient.slice(1)}, ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, files })
+            } else {
+                notificationUser.send({ embeds: [embed] })
             }
-            notificationUser.send({ content: `**Status update for @${User.username}#${User.discriminator}**\n${newClient.charAt(0).toUpperCase() + newClient.slice(1)}, ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, files })
-        } else {
-            notificationUser.send({ embeds: [embed] })
+            console.log('Presence updated', User.username, oldPresence?.clientStatus, newPresence?.clientStatus)
+        } catch (error) {
+            notificationUser.send(`Error: ${error.message}`)
         }
-        console.log('Presence updated', User.username, oldPresence?.clientStatus, newPresence?.clientStatus)
     })
     const welcomeEmbed = new Discord.EmbedBuilder()
         .setColor(randomColor())
