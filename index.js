@@ -35,12 +35,11 @@ const footerImage = 'https://assets-global.website-files.com/6257adef93867e50d84
 client.login(process.env.token).then(async () => {
     const notificationUser = await client.users.fetch(process.env.notificationUser)
     client.addListener('presenceUpdate', async (oldPresence, newPresence) => {
-        console.log(oldPresence.clientStatus, newPresence.clientStatus, newPresence.user)
         const User = newPresence.user
-        const oldClient = Object.keys(oldPresence.clientStatus)[0]
-        const newClient = Object.keys(newPresence.clientStatus)[0]
-        const oldStatus = oldPresence.status
-        const newStatus = newPresence.status
+        const oldClient = Object.keys(oldPresence?.clientStatus)[0]
+        const newClient = Object.keys(newPresence?.clientStatus)[0]
+        const oldStatus = oldPresence?.status
+        const newStatus = newPresence?.status
         if (`${oldClient}, ${oldStatus}` == `${newClient}, ${newStatus}`) return
         if (!userIds.includes(newPresence.user.id)) return
         const embed = new Discord.EmbedBuilder()
@@ -62,7 +61,7 @@ client.login(process.env.token).then(async () => {
         } else {
             notificationUser.send({ embeds: [embed] })
         }
-        console.log('Presence updated', User.username, oldPresence.clientStatus, newPresence.clientStatus)
+        console.log('Presence updated', User.username, oldPresence?.clientStatus, newPresence?.clientStatus)
     })
     const welcomeEmbed = new Discord.EmbedBuilder()
         .setColor(randomColor())
