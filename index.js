@@ -9,6 +9,21 @@ const client = new Discord.Client({
     intents: [Discord.GatewayIntentBits.Guilds, Discord.GatewayIntentBits.GuildPresences, Discord.GatewayIntentBits.GuildMembers]
 })
 
+const icons = {
+    'desktop-online': 'https://i.imgur.com/RCX7lA1.png',
+    'desktop-offline': 'https://i.imgur.com/d4KDwB3.png',
+    'desktop-dnd': 'https://i.imgur.com/pLKpXk6.png',
+    'desktop-idle': 'https://i.imgur.com/cgsPdos.png',
+    'web-online': 'https://i.imgur.com/2vaGtaK.png',
+    'web-offline': 'https://i.imgur.com/TKDY8C4.png',
+    'web-dnd': 'https://i.imgur.com/EEzzNwZ.png',
+    'web-idle': 'https://i.imgur.com/s2GTD6e.png',
+    'mobile-online': 'https://i.imgur.com/k9MqhSy.png',
+    'mobile-offline': 'https://i.imgur.com/CoBUGL4.png',
+    'mobile-dnd': 'https://i.imgur.com/FAsnfCo.png',
+    'mobile-idle': 'https://i.imgur.com/Lb9gGYY.png'
+}
+
 const notificationIcon = 'https://images.weserv.nl/?url=avatars.githubusercontent.com/u/62234360&h=32&w=32&fit=cover&mask=circle&maxage=7d'
 const githubUser = 'https://github.com/Zo-Bro-23'
 const githubRepo = 'https://github.com/Zo-Bro-23/discord-status-notification'
@@ -21,23 +36,23 @@ client.login(process.env.token).then(async () => {
     const notificationUser = await client.users.fetch(process.env.notificationUser)
     client.addListener('presenceUpdate', async (oldPresence, newPresence) => {
         console.log(oldPresence.clientStatus, newPresence.clientStatus, newPresence.user)
-        if (`${Object.keys(oldPresence.clientStatus)[0]}, ${oldPresence.status}` == `${Object.keys(newPresence.clientStatus)[0]}, ${newPresence.status}`) return
-        if (!userIds.includes(newPresence.user.id)) return
         const User = newPresence.user
         const oldClient = Object.keys(oldPresence.clientStatus)[0]
         const newClient = Object.keys(newPresence.clientStatus)[0]
         const oldStatus = oldPresence.status
         const newStatus = newPresence.status
+        if (`${oldClient}, ${oldStatus}` == `${newClient}, ${newStatus}`) return
+        if (!userIds.includes(newPresence.user.id)) return
         const embed = new Discord.EmbedBuilder()
             .setColor(randomColor())
             .setTitle('Status Update')
             .setURL(githubRepo)
             .setAuthor({ name: author, iconURL: notificationIcon, url: githubUser })
             .setDescription(`Status update for @${User.username}#${User.discriminator}`)
-            .setThumbnail(thumbnail)
+            .setThumbnail(icons[`${newClient}-${newStatus}`] ? icons[`${newClient}-${newStatus}`] : thumbnail)
             .addFields(
-                { name: 'Old Status', value: `${oldClient.charAt(0).toUpperCase() + oldClient.slice(1)}: ${oldStatus.charAt(0).toUpperCase() + oldStatus.slice(1)}`, inline: true },
-                { name: 'New Status', value: `${newClient.charAt(0).toUpperCase() + newClient.slice(1)}: ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, inline: true }
+                { name: 'Old Status', value: `${oldClient?.charAt(0).toUpperCase() + oldClient?.slice(1)}: ${oldStatus.charAt(0).toUpperCase() + oldStatus.slice(1)}`, inline: true },
+                { name: 'New Status', value: `${newClient?.charAt(0).toUpperCase() + newClient?.slice(1)}: ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, inline: true }
             )
             .setImage(User.avatarURL({ size: 128 }))
             .setTimestamp()
