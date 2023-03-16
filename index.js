@@ -57,7 +57,11 @@ client.login(process.env.token).then(async () => {
             .setTimestamp()
             .setFooter({ text: footer, iconURL: footerImage })
         if (process.env.legacy == 'true') {
-            notificationUser.send(`**Status update for @${User.username}#${User.discriminator}**\n${newClient.charAt(0).toUpperCase() + newClient.slice(1)}, ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`)
+            const files = []
+            if (icons[`${newClient}-${newStatus}`]) {
+                files.push({ attachment: icons[`${newClient}-${newStatus}`], name: 'status.png' })
+            }
+            notificationUser.send({ content: `**Status update for @${User.username}#${User.discriminator}**\n${newClient.charAt(0).toUpperCase() + newClient.slice(1)}, ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, files })
         } else {
             notificationUser.send({ embeds: [embed] })
         }
