@@ -37,8 +37,14 @@ client.login(process.env.token).then(async () => {
     client.addListener('presenceUpdate', async (oldPresence, newPresence) => {
         try {
             const User = newPresence.user
-            const oldClient = oldPresence?.clientStatus ?? Object.keys(oldPresence?.clientStatus)[0]
-            const newClient = newPresence?.clientStatus ?? Object.keys(newPresence?.clientStatus)[0]
+            let oldClient
+            let newClient
+            if (oldPresence?.clientStatus) {
+                oldClient = Object.keys(oldPresence?.clientStatus)[0]
+            }
+            if (newPresence?.clientStatus) {
+                newClient = Object.keys(newPresence?.clientStatus)[0]
+            }
             const oldStatus = oldPresence?.status
             const newStatus = newPresence?.status
             if (`${oldClient}, ${oldStatus}` == `${newClient}, ${newStatus}`) return
