@@ -21,7 +21,15 @@ const icons = {
     'mobile-online': 'https://i.imgur.com/k9MqhSy.png',
     'mobile-offline': 'https://i.imgur.com/CoBUGL4.png',
     'mobile-dnd': 'https://i.imgur.com/FAsnfCo.png',
-    'mobile-idle': 'https://i.imgur.com/Lb9gGYY.png'
+    'mobile-idle': 'https://i.imgur.com/Lb9gGYY.png',
+    'unknown-online': 'https://i.imgur.com/EKIhNk7.png',
+    'unknown-offline': 'https://i.imgur.com/mOAwD8B.png',
+    'unknown-dnd': 'https://i.imgur.com/B7WbOTm.png',
+    'unknown-idle': 'https://i.imgur.com/9iXUVaN.png'
+}
+
+if (!process.env.notificationUser || !process.env.token || !process.env.guild) {
+    throw new Error('Required parameters not found in environment variables!')
 }
 
 const notificationIcon = 'https://images.weserv.nl/?url=avatars.githubusercontent.com/u/62234360&h=32&w=32&fit=cover&mask=circle&maxage=7d'
@@ -39,16 +47,27 @@ client.login(process.env.token).then(async () => {
             const User = newPresence.user
             let oldClient
             let newClient
-            if (oldPresence?.clientStatus) {
-                oldClient = Object.keys(oldPresence?.clientStatus)[0]
+            if (oldPresence?.clientStatus && Object.keys(oldPresence.clientStatus).length > 0) {
+                oldClient = Object.keys(oldPresence.clientStatus)[0]
+            } else {
+                oldClient = 'unknown'
             }
-            if (newPresence?.clientStatus) {
-                newClient = Object.keys(newPresence?.clientStatus)[0]
+            if (newPresence?.clientStatus && Object.keys(newPresence.clientStatus).length > 0) {
+                newClient = Object.keys(newPresence.clientStatus)[0]
+            } else {
+                newClient = 'unknown'
             }
-            const oldStatus = oldPresence?.status
-            const newStatus = newPresence?.status
+            let oldStatus = oldPresence?.status
+            let newStatus = newPresence?.status
+            if (!oldStatus) {
+                oldStatus = 'offline'
+            }
+            if (!newStatus) {
+                newStatus = 'offline'
+            }
             if (`${oldClient}, ${oldStatus}` == `${newClient}, ${newStatus}`) return
             if (!userIds.includes(newPresence.user.id)) return
+
             const embed = new Discord.EmbedBuilder()
                 .setColor(randomColor())
                 .setTitle('Status Update')
@@ -57,8 +76,8 @@ client.login(process.env.token).then(async () => {
                 .setDescription(`Status update for @${User.username}#${User.discriminator}`)
                 .setThumbnail(icons[`${newClient}-${newStatus}`] ? icons[`${newClient}-${newStatus}`] : thumbnail)
                 .addFields(
-                    { name: 'Old Status', value: `${oldClient ?? oldClient?.charAt(0).toUpperCase() + oldClient?.slice(1)}: ${oldStatus.charAt(0).toUpperCase() + oldStatus.slice(1)}`, inline: true },
-                    { name: 'New Status', value: `${newClient ?? newClient?.charAt(0).toUpperCase() + newClient?.slice(1)}: ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, inline: true }
+                    { name: 'Old Status', value: `${oldClient.charAt(0).toUpperCase() + oldClient.slice(1)}: ${oldStatus.charAt(0).toUpperCase() + oldStatus.slice(1)}`, inline: true },
+                    { name: 'New Status', value: `${newClient.charAt(0).toUpperCase() + newClient.slice(1)}: ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, inline: true }
                 )
                 .setImage(User.avatarURL({ size: 128 }))
                 .setTimestamp()
@@ -68,11 +87,11 @@ client.login(process.env.token).then(async () => {
                 if (icons[`${newClient}-${newStatus}`]) {
                     files.push({ attachment: icons[`${newClient}-${newStatus}`], name: 'status.png' })
                 }
-                notificationUser.send({ content: `**Status update for @${User.username}#${User.discriminator}**\n${newClient ?? (newClient?.charAt(0).toUpperCase() + newClient?.slice(1))}, ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`, files })
+                notificationUser.send({ content: `**Status update for @${User.username}#${User.discriminator}**\nDevice: *${newClient.charAt(0).toUpperCase() + newClient.slice(1)}*, Status: *${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}*`, files })
             } else {
                 notificationUser.send({ embeds: [embed] })
             }
-            console.log('Presence updated', User.username, oldPresence?.clientStatus, newPresence?.clientStatus)
+            console.log('Presence updated', User.username, oldClient, newClient)
         } catch (error) {
             notificationUser.send(`Error: ${error}\n${error.stack}`)
         }
